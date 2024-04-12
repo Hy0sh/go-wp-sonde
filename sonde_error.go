@@ -33,16 +33,17 @@ type SondeError struct {
 	Error           string
 	OnErrorSince    time.Time
 	NbTimeErrors    int
-	Solved          bool
+	NbTimeSolved    int
 	HasBeenNotified bool
+	NbRetentions    int
 }
 
 func (s *SondeError) IsResolved() bool {
-	return s.Solved
+	return s.NbTimeSolved >= s.NbRetentions
 }
 
 func (s *SondeError) SetResolved() {
-	s.Solved = true
+	s.NbTimeSolved++
 }
 
 func (s *SondeError) SetNotified() {
@@ -97,7 +98,11 @@ func (s *SondeError) GetMessage(sonde *Sonde) string {
 	return message
 }
 
-func NewSondeError(Status SondeErrorStatus, ErrLvl SondeErrorLevel, Error string, Subject string, OnErrorSince time.Time) *SondeError {
+func (s *SondeError) CanNotify() bool {
+	return (s.NbTimeErrors >= s.NbRetentions && !s.HasBeenNotified) || s.NbTimeSolved >= s.NbRetentions
+}
+
+func NewSondeError(Status SondeErrorStatus, ErrLvl SondeErrorLevel, Error string, Subject string, OnErrorSince time.Time, NbRetentions int) *SondeError {
 	return &SondeError{
 		uuid:         uuid.New().String(),
 		Status:       Status,
@@ -105,7 +110,7 @@ func NewSondeError(Status SondeErrorStatus, ErrLvl SondeErrorLevel, Error string
 		Error:        Error,
 		Subject:      Subject,
 		OnErrorSince: OnErrorSince,
-		Solved:       false,
 		NbTimeErrors: 1,
+		NbRetentions: NbRetentions,
 	}
 }

@@ -3,12 +3,13 @@
 Sonde ayant a vocation a surveiller des métrics sur un site web.
 Temps de réponse, contenu du site, si le site est indexé, code HTTP.
 
+### valeurs par défaut config :
+NbRetentionsWarning = 2
+NbRetentionsCritical = 1
+
 ### Options
 ``` text
-  -c string Duplicate old nosee sondes - abs path
-  -w int Number of warning before alert
   -d string Directory with sondes
-  -o string Destination directory for new toml files - abs path
   -t	Test mode - execute test part only
   -v	Print version
 ```

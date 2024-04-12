@@ -50,6 +50,13 @@ func LoadFromToml(fileSonde string) (*Sonde, error) {
 	sonde.NextExecution = time.Now()
 	sonde.Errors = make(map[SondeErrorStatus]*SondeError)
 
+	if sonde.NbRetentionsCritical <= 0 {
+		sonde.NbRetentionsCritical = 1
+	}
+	if sonde.NbRetentionsWarning <= 0 {
+		sonde.NbRetentionsWarning = 2
+	}
+
 	return sonde, err
 }
 
@@ -132,7 +139,6 @@ func (w *Worker) ScanSondeDirectory() error {
 
 		// check if sonde already exists
 		if _, ok := w.sondes[sonde.FileName]; !ok {
-			sonde.WarnLimit = w.WarnLimit
 			w.AppendSonde(sonde)
 			filesSondes[sonde.FileName] = true
 		} else {
